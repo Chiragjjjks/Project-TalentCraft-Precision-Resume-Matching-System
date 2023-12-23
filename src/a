@@ -1,0 +1,53 @@
+// HRDashboard.js
+
+import React, { useState, useEffect } from 'react';
+
+const HRDashboard = () => {
+  const [docxFiles, setDocxFiles] = useState([]);
+
+  useEffect(() => {
+    const fetchDocxFiles = async () => {
+      try {
+        const response = await fetch('http://127.0.0.1:5000/get_typed_words', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            words: ["typed", "words"], // Replace with your typed words
+            keywords: "keyword1 keyword2", // Replace with your keywords
+          }),
+        });
+
+        if (response.ok) {
+          const { similarities } = await response.json();
+          setDocxFiles(similarities);
+        } else {
+          console.error('Failed to fetch similarities');
+        }
+      } catch (error) {
+        console.error('Error fetching similarities:', error);
+      }
+    };
+
+    fetchDocxFiles();
+  }, []);
+
+  return (
+    <div>
+    <h1>HR Dashboard < /h1>
+  {
+    docxFiles.map((file, index) => (
+      <div key= { index } >
+      <span>📄 </span>
+      <p>
+            Document: { file.name }, Similarity: { file.similarity.toFixed(2) } %
+    </p>
+    < /div>
+    ))
+  }
+  </div>
+  );
+};
+
+export default HRDashboard;
